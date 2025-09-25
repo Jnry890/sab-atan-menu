@@ -3,93 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SAB-ATAN Menu</title>
+  <title>Sab-atan Menu</title>
   <style>
-    body {
+    body, html {
       margin: 0;
-      background: #000;
+      padding: 0;
+      height: 100%;
+      width: 100%;
       overflow: hidden;
-      height: 100vh;
-      width: 100vw;
+      background: black;
     }
-    .menu-container {
-      height: 100vh;
-      width: 100vw;
-      position: relative;
-    }
-    .menu-container img {
-      position: absolute;
-      top: 0;
-      left: 0;
+
+    .swiper {
       width: 100%;
       height: 100%;
-      object-fit: contain; /* ✅ show full image, no cropping */
-      background: #000;    /* fill gaps with black */
-      display: none;
     }
-    .menu-container img.active {
-      display: block;
+
+    .swiper-slide {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: black;
+    }
+
+    .swiper-slide img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain; /* keeps full image visible */
     }
   </style>
+
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 </head>
 <body>
-  <div class="menu-container">
-    <img src="sab-atan-front.png" alt="Menu Front" class="active">
-    <img src="sab-atan-2.png" alt="Menu Page 2">
-    <img src="sab-atan-3.png" alt="Menu Page 3">
-    <img src="sab-atan-4.png" alt="Menu Page 4">
-    <img src="sab-atan-5.png" alt="Menu Page 5">
-    <img src="sab-atan-back.png" alt="Menu Back">
+  <!-- Swiper container -->
+  <div class="swiper">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide"><img src="sab-atan-front.png" alt="Menu Front"></div>
+      <div class="swiper-slide"><img src="sab-atan-back.png" alt="Menu Back"></div>
+      <div class="swiper-slide"><img src="sab-atan-page1.png" alt="Menu Page 1"></div>
+      <div class="swiper-slide"><img src="sab-atan-page2.png" alt="Menu Page 2"></div>
+      <div class="swiper-slide"><img src="sab-atan-page3.png" alt="Menu Page 3"></div>
+      <div class="swiper-slide"><img src="sab-atan-page4.png" alt="Menu Page 4"></div>
+    </div>
   </div>
 
+  <!-- Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
-    const images = document.querySelectorAll('.menu-container img');
-    let current = 0;
-    let startX = 0;
-    let endX = 0;
-
-    function showImage(index) {
-      images.forEach((img, i) => {
-        img.classList.toggle('active', i === index);
-      });
-    }
-
-    function nextImage() {
-      current = (current + 1) % images.length;
-      showImage(current);
-    }
-
-    function prevImage() {
-      current = (current - 1 + images.length) % images.length;
-      showImage(current);
-    }
-
-    // Swipe (mobile)
-    document.addEventListener('touchstart', e => {
-      startX = e.touches[0].clientX;
-    });
-
-    document.addEventListener('touchend', e => {
-      endX = e.changedTouches[0].clientX;
-      if (endX < startX - 50) {
-        nextImage();
-      } else if (endX > startX + 50) {
-        prevImage();
-      }
-    });
-
-    // Mouse drag (desktop)
-    document.addEventListener('mousedown', e => {
-      startX = e.clientX;
-    });
-
-    document.addEventListener('mouseup', e => {
-      endX = e.clientX;
-      if (endX < startX - 50) {
-        nextImage();
-      } else if (endX > startX + 50) {
-        prevImage();
-      }
+    const swiper = new Swiper('.swiper', {
+      direction: 'horizontal',
+      loop: false,
+      allowTouchMove: true, // enables swipe
     });
   </script>
 </body>
