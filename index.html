@@ -20,11 +20,21 @@
       height: 100vh;
     }
 
-    #flipbook img {
+    #flipbook div {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       width: 100%;
       height: 100%;
-      object-fit: contain; /* always show full image, may add black bars */
       background: black;
+    }
+
+    #flipbook img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain; /* full image always visible */
+      display: block;
+      margin: auto;
     }
 
     /* Swipe notification */
@@ -62,12 +72,12 @@
   <div class="swipe-hint">📖 Swipe to flip pages</div>
 
   <div id="flipbook">
-    <div><img src="sab-atan-front.png?v=3" alt="Menu Front"></div>
-    <div><img src="sab-atan-2.png?v=3" alt="Menu Page 2"></div>
-    <div><img src="sab-atan-3.png?v=3" alt="Menu Page 3"></div>
-    <div><img src="sab-atan-4.png?v=3" alt="Menu Page 4"></div>
-    <div><img src="sab-atan-5.png?v=3" alt="Menu Page 5"></div>
-    <div><img src="sab-atan-back.png?v=3" alt="Menu Back"></div>
+    <div><img src="sab-atan-front.png?v=4" alt="Menu Front"></div>
+    <div><img src="sab-atan-2.png?v=4" alt="Menu Page 2"></div>
+    <div><img src="sab-atan-3.png?v=4" alt="Menu Page 3"></div>
+    <div><img src="sab-atan-4.png?v=4" alt="Menu Page 4"></div>
+    <div><img src="sab-atan-5.png?v=4" alt="Menu Page 5"></div>
+    <div><img src="sab-atan-back.png?v=4" alt="Menu Back"></div>
   </div>
 
   <script>
