@@ -26,15 +26,13 @@
       align-items: center;
       width: 100%;
       height: 100%;
-      background: black;
+      background: transparent; /* no black flash */
     }
 
     #flipbook img {
       max-width: 100%;
       max-height: 100%;
-      object-fit: contain; /* full image always visible */
-      display: block;
-      margin: auto;
+      object-fit: contain; /* always visible, black bars if needed */
     }
 
     /* Swipe notification */
@@ -72,19 +70,33 @@
   <div class="swipe-hint">📖 Swipe to flip pages</div>
 
   <div id="flipbook">
-    <div><img src="sab-atan-front.png?v=4" alt="Menu Front"></div>
-    <div><img src="sab-atan-2.png?v=4" alt="Menu Page 2"></div>
-    <div><img src="sab-atan-3.png?v=4" alt="Menu Page 3"></div>
-    <div><img src="sab-atan-4.png?v=4" alt="Menu Page 4"></div>
-    <div><img src="sab-atan-5.png?v=4" alt="Menu Page 5"></div>
-    <div><img src="sab-atan-back.png?v=4" alt="Menu Back"></div>
+    <div><img src="sab-atan-front.png?v=5" alt="Menu Front"></div>
+    <div><img src="sab-atan-2.png?v=5" alt="Menu Page 2"></div>
+    <div><img src="sab-atan-3.png?v=5" alt="Menu Page 3"></div>
+    <div><img src="sab-atan-4.png?v=5" alt="Menu Page 4"></div>
+    <div><img src="sab-atan-5.png?v=5" alt="Menu Page 5"></div>
+    <div><img src="sab-atan-back.png?v=5" alt="Menu Back"></div>
   </div>
 
   <script>
+    // Preload images to prevent black flash
+    const images = [
+      "sab-atan-front.png?v=5",
+      "sab-atan-2.png?v=5",
+      "sab-atan-3.png?v=5",
+      "sab-atan-4.png?v=5",
+      "sab-atan-5.png?v=5",
+      "sab-atan-back.png?v=5"
+    ];
+    images.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+
     // Initialize Turn.js
     $("#flipbook").turn({
-      width: window.innerWidth,
-      height: window.innerHeight,
+      width: window.innerWidth * 0.9,
+      height: window.innerHeight * 0.9,
       autoCenter: true,
       display: "single",
       elevation: 50,
@@ -94,7 +106,7 @@
 
     // Resize when window changes
     window.addEventListener("resize", () => {
-      $("#flipbook").turn("size", window.innerWidth, window.innerHeight);
+      $("#flipbook").turn("size", window.innerWidth * 0.9, window.innerHeight * 0.9);
     });
 
     // Enable swipe on mobile
@@ -108,9 +120,9 @@
     document.getElementById("flipbook").addEventListener("touchend", (e) => {
       endX = e.changedTouches[0].screenX;
       if (startX - endX > 50) {
-        $("#flipbook").turn("next");
+        $("#flipbook").turn("next"); // swipe left → next page
       } else if (endX - startX > 50) {
-        $("#flipbook").turn("previous");
+        $("#flipbook").turn("previous"); // swipe right → previous page
       }
     });
   </script>
