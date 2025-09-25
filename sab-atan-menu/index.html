@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAB-ATAN Menu</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #111;
+    }
+    #flipbook {
+      width: 90%;
+      height: 90vh;
+    }
+    #flipbook img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4.1.0/turn.min.js"></script>
+</head>
+<body>
+  <div id="flipbook">
+    <div><img src="SAB-ATAN-MENU-FRONT-PAGE.png" alt="Front Page"></div>
+    <div><img src="SAB-ATAN-MENU-2ND-PAGE.png" alt="2nd Page"></div>
+    <div><img src="SAB-ATAN-MENU-3RD-PAGE.png" alt="3rd Page"></div>
+    <div><img src="SAB-ATAN-MENU-4TH-PAGE.png" alt="4th Page"></div>
+    <div><img src="SAB-ATAN-MENU-5TH-PAGE.png" alt="5th Page"></div>
+    <div><img src="SAB-ATAN-MENU-BACK-PAGE.png" alt="Back Page"></div>
+  </div>
+
+  <script>
+    $("#flipbook").turn({
+      width: window.innerWidth * 0.9,
+      height: window.innerHeight * 0.9,
+      autoCenter: true,
+    });
+
+    // Resize dynamically
+    window.addEventListener("resize", function () {
+      $("#flipbook").turn("size", window.innerWidth * 0.9, window.innerHeight * 0.9);
+    });
+  </script>
+</body>
+</html>
