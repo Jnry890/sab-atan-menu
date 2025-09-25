@@ -1,57 +1,176 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>SAB-ATAN MENU</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SAB-ATAN Menu (Flipbook)</title>
+
   <style>
+    html,body { height:100%; margin:0; }
     body {
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: #222;
+      background:#1f7a2e;
+      font-family: Arial, Helvetica, sans-serif;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow:hidden; /* prevent page scroll while flipbook is open */
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
+
+    /* wrapper to center flipbook and control max width */
+    #flipbook-wrap {
+      width:100%;
+      max-width:1100px;
+      height:calc(100vh - 30px);
+      padding:15px;
+      box-sizing:border-box;
+      position:relative;
+    }
+
+    /* flipbook container required by turn.js */
     #flipbook {
-      width: 90%;
-      height: 90vh;
+      width:100%;
+      height:100%;
+      margin:0 auto;
     }
-    #flipbook img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
+
+    /* each page */
+    #flipbook .page {
+      width:100%;
+      height:100%;
+      background:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
     }
+    #flipbook .page img {
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+    }
+
+    /* arrow controls */
+    .nav-btn {
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      width:48px;
+      height:48px;
+      border-radius:24px;
+      background:rgba(255,255,255,0.9);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      z-index:1000;
+      box-shadow:0 4px 8px rgba(0,0,0,0.25);
+      user-select:none;
+    }
+    .nav-btn:hover { transform:translateY(-50%) scale(1.03); }
+    #prev-btn { left:10px; }
+    #next-btn { right:10px; }
+
+    /* small arrow icon */
+    .nav-btn::before {
+      content: "";
+      display:block;
+      width:14px;
+      height:14px;
+      border-top:3px solid #111;
+      border-right:3px solid #111;
+    }
+    #prev-btn::before { transform:rotate(-135deg); }
+    #next-btn::before { transform:rotate(45deg); }
+
+    /* responsive fallback: when turn.js is not present, allow vertical scroll */
+    .no-turn-body { overflow:auto; padding:20px; }
+    .no-turn-body img { max-width:100%; margin-bottom:18px; border-radius:8px; }
   </style>
-  <!-- Turn.js (flipbook library) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4.1.0/turn.min.js"></script>
 </head>
 <body>
-  <div id="flipbook">
-    <div><img src="sab-atan-front.png" alt="Front Page"></div>
-    <div><img src="sab-atan-2.png" alt="Page 2"></div>
-    <div><img src="sab-atan-3.png" alt="Page 3"></div>
-    <div><img src="sab-atan-4.png" alt="Page 4"></div>
-    <div><img src="sab-atan-5.png" alt="Page 5"></div>
-    <div><img src="sab-atan-back.png" alt="Back Page"></div>
+
+  <div id="flipbook-wrap">
+    <div id="flipbook">
+      <div class="page"><img src="sab-atan-front.png" alt="Front Page"></div>
+      <div class="page"><img src="sab-atan-2.png" alt="Page 2"></div>
+      <div class="page"><img src="sab-atan-3.png" alt="Page 3"></div>
+      <div class="page"><img src="sab-atan-4.png" alt="Page 4"></div>
+      <div class="page"><img src="sab-atan-5.png" alt="Page 5"></div>
+      <div class="page"><img src="sab-atan-back.png" alt="Back Page"></div>
+    </div>
+
+    <div id="prev-btn" class="nav-btn" title="Previous"></div>
+    <div id="next-btn" class="nav-btn" title="Next"></div>
   </div>
 
+  <!-- jQuery must come BEFORE turn.js -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4.1.0/turn.min.js"></script>
+
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const flipbook = document.getElementById("flipbook");
-      if (flipbook) {
-        $("#flipbook").turn({
-          width: flipbook.offsetWidth,
-          height: flipbook.offsetHeight,
-          autoCenter: true
+    (function ($) {
+      // safety: if turn.js isn't loaded, show fallback stacked images (and allow scroll)
+      if (typeof $.fn.turn !== "function") {
+        document.body.classList.add('no-turn-body');
+        console.warn("turn.js not available — showing fallback (stacked images).");
+        return;
+      }
+
+      const $flipbook = $('#flipbook');
+
+      // wait for all images inside #flipbook to finish loading
+      const $imgs = $flipbook.find('img');
+      let total = $imgs.length, loaded = 0;
+
+      $imgs.each(function () {
+        if (this.complete) {
+          loaded++;
+        } else {
+          $(this).on('load error', function () {
+            loaded++;
+            if (loaded === total) initTurn();
+          });
+        }
+      });
+
+      if (loaded === total) initTurn();
+
+      function initTurn() {
+        // compute desired size (responsive)
+        const maxWidth = Math.min(1100, $(window).width() * 0.92);
+        const maxHeight = Math.max(400, $(window).height() * 0.86);
+
+        $flipbook.turn({
+          width: maxWidth,
+          height: maxHeight,
+          autoCenter: true,
+          display: 'single',    // single page view (mobile-friendly); change to 'double' if you want 2-page spread
+          acceleration: true,
+          gradients: true,
+        });
+
+        // nav btn events
+        $('#prev-btn').on('click', function () { $flipbook.turn('previous'); });
+        $('#next-btn').on('click', function () { $flipbook.turn('next'); });
+
+        // keyboard navigation
+        $(document).on('keydown', function (e) {
+          if (e.key === "ArrowLeft") $flipbook.turn('previous');
+          if (e.key === "ArrowRight") $flipbook.turn('next');
+        });
+
+        // resize handler
+        $(window).on('resize', function () {
+          const w = Math.min(1100, $(window).width() * 0.92);
+          const h = Math.max(400, $(window).height() * 0.86);
+          try { $flipbook.turn('size', w, h); }
+          catch (err) { console.warn('turn size error:', err); }
         });
       }
-    });
+    })(jQuery);
   </script>
-  <!-- jQuery (needed for Turn.js) -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 </html>
-
-
-
