@@ -24,16 +24,18 @@
     #flipbook div {
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: center;   /* vertical + horizontal centering */
       width: 100%;
       height: 100%;
-      background: transparent;
+      background: black;     /* black bars when aspect ratio differs */
     }
 
     #flipbook img {
       max-width: 100%;
       max-height: 100%;
-      object-fit: contain;
+      object-fit: contain;   /* never crop */
+      display: block;
+      margin: auto;
     }
 
     /* Swipe notification */
@@ -177,5 +179,3 @@
   </script>
 </body>
 </html>
-
-
