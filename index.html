@@ -1,116 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sab-atan Menu</title>
+
   <style>
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
+      overflow: hidden; /* 🚫 no scroll */
+      height: 100%;
+      width: 100%;
       background: black;
-      height: 100vh;
-      overflow: hidden;
     }
 
     #flipbook {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100vw;
       height: 100vh;
-      display: flex;
-      transition: transform 0.4s ease;
     }
 
-    .page {
-      flex: 0 0 100%;
-      height: 100vh;
+    #flipbook img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* no crop, keep aspect ratio */
+      display: block;
+    }
+
+    /* Optional: smoother page shadow effect */
+    .turn-page {
       background: black;
-      position: relative;
-    }
-
-    .page img {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain; /* never crop */
-    }
-
-    /* Swipe hint */
-    .swipe-hint {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.7);
-      color: white;
-      padding: 10px 20px;
-      border-radius: 20px;
-      font-size: 16px;
-      opacity: 0;
-      animation: fadeInOut 5s ease forwards;
-      z-index: 9999;
-      white-space: nowrap;
-    }
-
-    @keyframes fadeInOut {
-      0% { opacity: 0; }
-      10% { opacity: 1; }
-      90% { opacity: 1; }
-      100% { opacity: 0; }
+      box-shadow: 0 0 8px rgba(0,0,0,0.5);
     }
   </style>
 </head>
 <body>
-  <!-- Swipe Hint -->
-  <div class="swipe-hint">📖 Swipe to flip pages</div>
 
-  <!-- Flipbook -->
   <div id="flipbook">
-    <div class="page"><img src="sab-atan-front.png?v=14" alt="Menu Front"></div>
-    <div class="page"><img src="sab-atan-2.png?v=14" alt="Menu Page 2"></div>
-    <div class="page"><img src="sab-atan-3.png?v=14" alt="Menu Page 3"></div>
-    <div class="page"><img src="sab-atan-4.png?v=14" alt="Menu Page 4"></div>
-    <div class="page"><img src="sab-atan-5.png?v=14" alt="Menu Page 5"></div>
-    <div class="page"><img src="sab-atan-back.png?v=14" alt="Menu Back"></div>
+    <div><img src="sab-atan-front.png" alt="Front"></div>
+    <div><img src="sab-atan-2.png" alt="Page 2"></div>
+    <div><img src="sab-atan-3.png" alt="Page 3"></div>
+    <div><img src="sab-atan-4.png" alt="Page 4"></div>
+    <div><img src="sab-atan-5.png" alt="Page 5"></div>
+    <div><img src="sab-atan-back.png" alt="Back"></div>
   </div>
 
+  <!-- jQuery & Turn.js -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/blasten/turn.js/turn.min.js"></script>
+
   <script>
-    const flipbook = document.getElementById("flipbook");
-    const total = flipbook.children.length;
-    let currentIndex = 0;
+    $(function() {
+      $("#flipbook").turn({
+        width: window.innerWidth,
+        height: window.innerHeight,
+        autoCenter: true,
+        display: "single",   // 🔹 only 1 page at a time
+        duration: 800,       // 🔹 smoother, prevents skipping
+        acceleration: false  // 🔹 more stable on mobile
+      });
 
-    function updateView() {
-      flipbook.style.transform = `translateX(-${currentIndex * 100}vw)`;
-    }
-
-    // Swipe controls
-    let startX = 0;
-    document.addEventListener("touchstart", e => {
-      startX = e.changedTouches[0].screenX;
+      // Resize handler (keeps it full screen)
+      $(window).on("resize", function() {
+        $("#flipbook").turn("size", window.innerWidth, window.innerHeight);
+      });
     });
-
-    document.addEventListener("touchend", e => {
-      const endX = e.changedTouches[0].screenX;
-      if (startX - endX > 50 && currentIndex < total - 1) {
-        currentIndex++;
-      } else if (endX - startX > 50 && currentIndex > 0) {
-        currentIndex--;
-      }
-      updateView();
-    });
-
-    // Click for desktop
-    document.addEventListener("click", e => {
-      if (e.clientX > window.innerWidth / 2 && currentIndex < total - 1) {
-        currentIndex++;
-      } else if (e.clientX < window.innerWidth / 2 && currentIndex > 0) {
-        currentIndex--;
-      }
-      updateView();
-    });
-
-    updateView();
   </script>
 </body>
 </html>
