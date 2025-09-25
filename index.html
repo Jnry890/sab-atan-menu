@@ -1,248 +1,107 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>SAB-ATAN Menu (Book)</title>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Sab-atan Menu</title>
   <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%;background:#000;overflow:hidden;font-family:Arial,Helvetica,sans-serif}
-    /* container used by turn.js */
-    #flipbook-wrap{
-      width:100%;
-      height:100%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      position:relative;
-    }
-    #flipbook{
-      width:90vw;
-      height:92vh;
-      /* turn.js expects pages to be sized exactly; we will set them to 100% of this */
-    }
-    #flipbook > div{
-      background:#000;
-      overflow:hidden;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-    #flipbook img{
-      width:100%;
-      height:100%;
-      object-fit:contain; /* show full image without cropping */
-      display:block;
+    body {
+      margin: 0;
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
     }
 
-    /* swipe hint toast */
-    .swipe-hint{
-      position:absolute;
-      bottom:22px;
-      left:50%;
-      transform:translateX(-50%);
-      background:rgba(0,0,0,0.7);
-      color:#fff;
-      padding:10px 16px;
-      border-radius:20px;
-      font-size:14px;
-      z-index:9999;
-      pointer-events:none;
-      opacity:0;
-      animation:hintInOut 5s ease forwards;
-      white-space:nowrap;
-    }
-    @keyframes hintInOut{
-      0%{opacity:0;transform:translateX(-50%) translateY(6px)}
-      10%{opacity:1;transform:translateX(-50%) translateY(0)}
-      90%{opacity:1}
-      100%{opacity:0;transform:translateX(-50%) translateY(6px)}
+    #flipbook {
+      width: 90vw;
+      height: 90vh;
     }
 
-    /* fallback (swiper) container style if used */
-    .fallback-swiper {
-      width:100%;
-      height:100%;
+    #flipbook img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
-    .fallback-swiper .swiper-slide { display:flex; align-items:center; justify-content:center; background:#000; }
-    .fallback-swiper img { max-width:100%; max-height:100%; object-fit:contain; }
 
-    /* small screens tweak so book fits nicely */
-    @media (max-width:900px){
-      #flipbook { width:98vw; height:96vh; }
+    /* Swipe notification */
+    .swipe-hint {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 16px;
+      opacity: 0;
+      animation: fadeInOut 5s ease forwards;
+      z-index: 9999;
+      white-space: nowrap;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { opacity: 0; }
     }
   </style>
 
-  <!-- jQuery (must be before Turn.js) -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <!-- Turn.js (real page-flip library) - loaded from unpkg -->
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- Local Turn.js -->
   <script src="js/turn.min.js"></script>
-
-  <!-- Swiper (fallback) CSS - loaded early so fallback looks right -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 </head>
 <body>
-  <div id="flipbook-wrap">
-    <!-- hint that displays every load -->
-    <div class="swipe-hint">👉 Swipe or drag to flip pages</div>
+  <!-- Swipe Hint -->
+  <div class="swipe-hint">📖 Swipe or drag to flip pages</div>
 
-    <!-- flipbook pages (Turn.js expects a container with child <div> pages) -->
-    <div id="flipbook">
-      <div><img src="sab-atan-front.png" alt="Front"></div>
-      <div><img src="sab-atan-2.png" alt="Page 2"></div>
-      <div><img src="sab-atan-3.png" alt="Page 3"></div>
-      <div><img src="sab-atan-4.png" alt="Page 4"></div>
-      <div><img src="sab-atan-5.png" alt="Page 5"></div>
-      <div><img src="sab-atan-back.png" alt="Back"></div>
-    </div>
+  <div id="flipbook">
+    <div><img src="sab-atan-front.png" alt="Menu Front"></div>
+    <div><img src="sab-atan-2.png" alt="Menu Page 2"></div>
+    <div><img src="sab-atan-3.png" alt="Menu Page 3"></div>
+    <div><img src="sab-atan-4.png" alt="Menu Page 4"></div>
+    <div><img src="sab-atan-5.png" alt="Menu Page 5"></div>
+    <div><img src="sab-atan-back.png" alt="Menu Back"></div>
   </div>
 
-  <!-- Swiper JS (fallback if Turn.js unavailable) -->
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
   <script>
-  (function () {
-    // Wait for all images inside #flipbook to load
-    const flipbookEl = document.getElementById('flipbook');
-    const imgs = Array.from(flipbookEl.querySelectorAll('img'));
-
-    function waitForImages(list){
-      return Promise.all(list.map(img => new Promise(resolve => {
-        if (img.complete && img.naturalWidth !== 0) return resolve();
-        // in some cases naturalWidth==0 for broken images; still resolve on error
-        img.onload = img.onerror = () => resolve();
-      })));
-    }
-
-    // compute sizes for turn.js pages
-    function computeSize() {
-      const maxW = Math.min(window.innerWidth * 0.95, 1400);
-      const maxH = Math.min(window.innerHeight * 0.94, 1100);
-      return { w: Math.floor(maxW), h: Math.floor(maxH) };
-    }
-
-    // initialize Turn.js book
-    function initTurnJS() {
-      try {
-        const { w, h } = computeSize();
-
-        // If window is wide, use 'double' (two-page spread) else 'single'
-        const displayMode = (window.innerWidth >= 900) ? 'double' : 'single';
-
-        // initialize
-        $('#flipbook').turn({
-          width: w,
-          height: h,
-          autoCenter: true,
-          display: displayMode,
-          elevation: 60,
-          gradients: true,
-          acceleration: true
-        });
-
-        // handle resize
-        let resizeTimeout;
-        window.addEventListener('resize', () => {
-          clearTimeout(resizeTimeout);
-          resizeTimeout = setTimeout(() => {
-            const { w: nw, h: nh } = computeSize();
-            try { $('#flipbook').turn('size', nw, nh); } catch (e) { /* ignore */ }
-          }, 120);
-        });
-
-        // add keyboard navigation
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'ArrowLeft') $('#flipbook').turn('previous');
-          if (e.key === 'ArrowRight') $('#flipbook').turn('next');
-        });
-
-        console.log('Turn.js initialized.');
-        return true;
-      } catch (err) {
-        console.warn('Turn init error:', err);
-        return false;
-      }
-    }
-
-    // fallback: convert the #flipbook content into a Swiper slider
-    function initFallbackSwiper() {
-      try {
-        // build a swiper container
-        const wrapper = document.createElement('div');
-        wrapper.className = 'fallback-swiper swiper';
-
-        const inner = document.createElement('div');
-        inner.className = 'swiper-wrapper';
-
-        // copy each existing page (div) into a .swiper-slide
-        const pages = Array.from(flipbookEl.children);
-        pages.forEach(page => {
-          const slide = document.createElement('div');
-          slide.className = 'swiper-slide';
-          // move the image node into slide (clone to keep original intact)
-          const img = page.querySelector('img');
-          if (img) {
-            const clone = img.cloneNode(true);
-            clone.style.maxWidth = '100%';
-            clone.style.maxHeight = '100%';
-            clone.style.objectFit = 'contain';
-            slide.appendChild(clone);
-          }
-          inner.appendChild(slide);
-        });
-
-        wrapper.appendChild(inner);
-
-        // replace flipbook with the wrapper
-        const wrapParent = flipbookEl.parentNode;
-        wrapParent.replaceChild(wrapper, flipbookEl);
-
-        // init swiper
-        const s = new Swiper(wrapper, {
-          direction: 'horizontal',
-          loop: false,
-          effect: 'creative',
-          creativeEffect: {
-            prev: { translate: ['-20%', 0, -400], opacity: 0.6 },
-            next: { translate: ['20%', 0, -400], opacity: 0.6 }
-          },
-          grabCursor: true,
-          keyboard: { enabled: true },
-        });
-
-        console.log('Fallback Swiper initialized.');
-        return true;
-      } catch (err) {
-        console.error('Fallback init error:', err);
-        return false;
-      }
-    }
-
-    // orchestrator
-    waitForImages(imgs).then(() => {
-      // If turn is available (loaded successfully) initialize it
-      if (window.jQuery && typeof jQuery.fn.turn === 'function') {
-        const ok = initTurnJS();
-        if (!ok) {
-          // fallback to swiper
-          initFallbackSwiper();
-        }
-      } else {
-        console.warn('Turn.js not available — using fallback.');
-        initFallbackSwiper();
-      }
-    }).catch(err => {
-      console.warn('Image load wait error (continuing):', err);
-      if (window.jQuery && typeof jQuery.fn.turn === 'function') {
-        if (!initTurnJS()) initFallbackSwiper();
-      } else {
-        initFallbackSwiper();
-      }
+    // Initialize Turn.js
+    $("#flipbook").turn({
+      width: window.innerWidth * 0.9,
+      height: window.innerHeight * 0.9,
+      autoCenter: true,
+      display: "single", // single page flip like a book
+      elevation: 50,
+      gradients: true,
+      acceleration: true
     });
 
-  })();
+    // Resize when window changes
+    window.addEventListener("resize", () => {
+      $("#flipbook").turn("size", window.innerWidth * 0.9, window.innerHeight * 0.9);
+    });
+
+    // Enable swipe on mobile
+    let startX = 0;
+    let endX = 0;
+
+    document.getElementById("flipbook").addEventListener("touchstart", (e) => {
+      startX = e.changedTouches[0].screenX;
+    });
+
+    document.getElementById("flipbook").addEventListener("touchend", (e) => {
+      endX = e.changedTouches[0].screenX;
+      if (startX - endX > 50) {
+        $("#flipbook").turn("next"); // swipe left → next page
+      } else if (endX - startX > 50) {
+        $("#flipbook").turn("previous"); // swipe right → previous page
+      }
+    });
   </script>
 </body>
 </html>
-
