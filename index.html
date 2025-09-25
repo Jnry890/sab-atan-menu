@@ -5,28 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Sab-atan Menu</title>
   <style>
+    /* Reset margin and set full viewport height for body */
     body {
       margin: 0;
       background: black;
+      /* Use 100vh for full viewport height */
+      height: 100vh;
+      /* Ensure everything inside body takes up 100% of the viewport */
+      width: 100vw;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      /* Hide scrollbars that might appear */
       overflow: hidden;
     }
 
+    /* Set flipbook to full viewport size */
     #flipbook {
-      width: 90vw;
-      height: 90vh;
+      /* Turn.js will manage the actual size, but this is a good container fallback */
+      width: 100vw;
+      height: 100vh;
     }
 
+    /* Set image to cover its page container */
     #flipbook img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      /* Use object-fit: contain to ensure the whole image is visible,
+         or use object-fit: cover if you want it to fill the page entirely
+         and don't mind clipping */
+      object-fit: contain; 
     }
 
-    /* Swipe notification */
+    /* The 'div' wrappers created by Turn.js should also be set to 100% */
+    #flipbook > div {
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Swipe notification (no changes needed, but keeping for completeness) */
     .swipe-hint {
       position: absolute;
       bottom: 20px;
@@ -51,13 +68,10 @@
     }
   </style>
 
-  <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <!-- Local Turn.js -->
   <script src="js/turn.min.js"></script>
 </head>
 <body>
-  <!-- Swipe Hint -->
   <div class="swipe-hint">📖 Swipe to flip pages</div>
 
   <div id="flipbook">
@@ -70,23 +84,36 @@
   </div>
 
   <script>
-    // Initialize Turn.js
-    $("#flipbook").turn({
-      width: window.innerWidth * 0.9,
-      height: window.innerHeight * 0.9,
-      autoCenter: true,
-      display: "single", // single page flip like a book
-      elevation: 50,
-      gradients: true,
-      acceleration: true
-    });
+    // Function to calculate and apply the correct size
+    function setFlipbookSize() {
+        // Use 100% of the window's inner width and height
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        
+        // Check if flipbook is already initialized
+        if ($("#flipbook").data().initialized) {
+            $("#flipbook").turn("size", width, height);
+        } else {
+             // Initialize Turn.js
+            $("#flipbook").turn({
+                width: width,
+                height: height,
+                autoCenter: true,
+                display: "single", // single page flip like a book
+                elevation: 50,
+                gradients: true,
+                acceleration: true
+            });
+        }
+    }
 
-    // Resize when window changes
-    window.addEventListener("resize", () => {
-      $("#flipbook").turn("size", window.innerWidth * 0.9, window.innerHeight * 0.9);
-    });
+    // Call the function on initial load
+    $(document).ready(setFlipbookSize);
 
-    // Enable swipe on mobile
+    // Resize when window changes (using the function)
+    window.addEventListener("resize", setFlipbookSize);
+
+    // Enable swipe on mobile (no changes needed)
     let startX = 0;
     let endX = 0;
 
@@ -105,6 +132,3 @@
   </script>
 </body>
 </html>
-
-
-
