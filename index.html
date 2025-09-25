@@ -18,12 +18,8 @@
       position: relative;
     }
     .menu-container img {
-      position: absolute;
-      top: 0;
-      left: 0;
       width: 100%;
-      height: 100%;
-      object-fit: cover; /* ✅ Fill screen, crop if needed */
+      height: auto; /* ✅ keeps proportions */
       display: none;
     }
     .menu-container img.active {
@@ -34,6 +30,9 @@
 <body>
   <div class="menu-container">
     <img src="sab-atan-front.png" alt="Menu Front" class="active">
+    <img src="sab-atan-2nd.png" alt="Menu 2nd">
+    <img src="sab-atan-3rd.png" alt="Menu 3rd">
+    <img src="sab-atan-4th.png" alt="Menu 4th">
     <img src="sab-atan-back.png" alt="Menu Back">
   </div>
 
@@ -59,29 +58,20 @@
       showImage(currentIndex);
     }
 
-    // Touch events (swipe)
-    document.addEventListener("touchstart", (e) => {
-      startX = e.touches[0].clientX;
-    });
-
+    // Swipe gestures
+    document.addEventListener("touchstart", (e) => startX = e.touches[0].clientX);
     document.addEventListener("touchend", (e) => {
       endX = e.changedTouches[0].clientX;
-      if (startX - endX > 50) {
-        nextImage(); // swipe left
-      } else if (endX - startX > 50) {
-        prevImage(); // swipe right
-      }
+      if (startX - endX > 50) nextImage();
+      else if (endX - startX > 50) prevImage();
     });
 
-    // Mouse drag support
+    // Mouse drag
     document.addEventListener("mousedown", (e) => startX = e.clientX);
     document.addEventListener("mouseup", (e) => {
       endX = e.clientX;
-      if (startX - endX > 50) {
-        nextImage();
-      } else if (endX - startX > 50) {
-        prevImage();
-      }
+      if (startX - endX > 50) nextImage();
+      else if (endX - startX > 50) prevImage();
     });
   </script>
 </body>
