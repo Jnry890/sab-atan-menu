@@ -18,20 +18,25 @@
     #flipbook {
       width: 100vw;
       height: 100vh;
-      position: relative;
-      display: flex;
       overflow: hidden;
+      position: relative;
+    }
+
+    .pages {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.4s ease;
     }
 
     .page {
-      min-width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       flex-shrink: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       background: black;
-      transition: transform 0.4s ease; /* smooth sliding animation */
     }
 
     .page img {
@@ -40,7 +45,7 @@
       object-fit: contain;
     }
 
-    /* Swipe notification */
+    /* Swipe hint */
     .swipe-hint {
       position: absolute;
       bottom: 20px;
@@ -71,36 +76,34 @@
 
   <!-- Flipbook -->
   <div id="flipbook">
-    <div class="page"><img src="sab-atan-front.png?v=9" alt="Menu Front"></div>
-    <div class="page"><img src="sab-atan-2.png?v=9" alt="Menu Page 2"></div>
-    <div class="page"><img src="sab-atan-3.png?v=9" alt="Menu Page 3"></div>
-    <div class="page"><img src="sab-atan-4.png?v=9" alt="Menu Page 4"></div>
-    <div class="page"><img src="sab-atan-5.png?v=9" alt="Menu Page 5"></div>
-    <div class="page"><img src="sab-atan-back.png?v=9" alt="Menu Back"></div>
+    <div class="pages" id="pages">
+      <div class="page"><img src="sab-atan-front.png?v=10" alt="Menu Front"></div>
+      <div class="page"><img src="sab-atan-2.png?v=10" alt="Menu Page 2"></div>
+      <div class="page"><img src="sab-atan-3.png?v=10" alt="Menu Page 3"></div>
+      <div class="page"><img src="sab-atan-4.png?v=10" alt="Menu Page 4"></div>
+      <div class="page"><img src="sab-atan-5.png?v=10" alt="Menu Page 5"></div>
+      <div class="page"><img src="sab-atan-back.png?v=10" alt="Menu Back"></div>
+    </div>
   </div>
 
   <script>
-    const flipbook = document.getElementById("flipbook");
-    const pages = document.querySelectorAll(".page");
+    const pages = document.getElementById("pages");
+    const total = pages.children.length;
     let currentIndex = 0;
 
     function updateView() {
-      pages.forEach((page, i) => {
-        page.style.transform = `translateX(${(i - currentIndex) * 100}%)`;
-      });
+      pages.style.transform = `translateX(-${currentIndex * 100}vw)`;
     }
-
-    updateView();
 
     // Swipe controls
     let startX = 0;
-    flipbook.addEventListener("touchstart", e => {
+    document.addEventListener("touchstart", e => {
       startX = e.changedTouches[0].screenX;
     });
 
-    flipbook.addEventListener("touchend", e => {
+    document.addEventListener("touchend", e => {
       const endX = e.changedTouches[0].screenX;
-      if (startX - endX > 50 && currentIndex < pages.length - 1) {
+      if (startX - endX > 50 && currentIndex < total - 1) {
         currentIndex++;
       } else if (endX - startX > 50 && currentIndex > 0) {
         currentIndex--;
@@ -109,14 +112,16 @@
     });
 
     // Click for desktop testing
-    flipbook.addEventListener("click", e => {
-      if (e.clientX > window.innerWidth / 2 && currentIndex < pages.length - 1) {
+    document.addEventListener("click", e => {
+      if (e.clientX > window.innerWidth / 2 && currentIndex < total - 1) {
         currentIndex++;
       } else if (e.clientX < window.innerWidth / 2 && currentIndex > 0) {
         currentIndex--;
       }
       updateView();
     });
+
+    updateView();
   </script>
 </body>
 </html>
