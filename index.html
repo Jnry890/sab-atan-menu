@@ -15,23 +15,15 @@
     #flipbook {
       width: 100vw;
       height: 100vh;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .pages {
       display: flex;
-      width: 100%;
-      height: 100%;
       transition: transform 0.4s ease;
     }
 
     .page {
-      width: 100vw;
+      flex: 0 0 100%;
       height: 100vh;
-      flex-shrink: 0;
       background: black;
-      position: relative; /* key for absolute centering */
+      position: relative;
     }
 
     .page img {
@@ -41,7 +33,7 @@
       transform: translate(-50%, -50%);
       max-width: 100%;
       max-height: 100%;
-      object-fit: contain;  /* no crop */
+      object-fit: contain; /* never crop */
     }
 
     /* Swipe hint */
@@ -75,23 +67,21 @@
 
   <!-- Flipbook -->
   <div id="flipbook">
-    <div class="pages" id="pages">
-      <div class="page"><img src="sab-atan-front.png?v=13" alt="Menu Front"></div>
-      <div class="page"><img src="sab-atan-2.png?v=13" alt="Menu Page 2"></div>
-      <div class="page"><img src="sab-atan-3.png?v=13" alt="Menu Page 3"></div>
-      <div class="page"><img src="sab-atan-4.png?v=13" alt="Menu Page 4"></div>
-      <div class="page"><img src="sab-atan-5.png?v=13" alt="Menu Page 5"></div>
-      <div class="page"><img src="sab-atan-back.png?v=13" alt="Menu Back"></div>
-    </div>
+    <div class="page"><img src="sab-atan-front.png?v=14" alt="Menu Front"></div>
+    <div class="page"><img src="sab-atan-2.png?v=14" alt="Menu Page 2"></div>
+    <div class="page"><img src="sab-atan-3.png?v=14" alt="Menu Page 3"></div>
+    <div class="page"><img src="sab-atan-4.png?v=14" alt="Menu Page 4"></div>
+    <div class="page"><img src="sab-atan-5.png?v=14" alt="Menu Page 5"></div>
+    <div class="page"><img src="sab-atan-back.png?v=14" alt="Menu Back"></div>
   </div>
 
   <script>
-    const pages = document.getElementById("pages");
-    const total = pages.children.length;
+    const flipbook = document.getElementById("flipbook");
+    const total = flipbook.children.length;
     let currentIndex = 0;
 
     function updateView() {
-      pages.style.transform = `translateX(-${currentIndex * 100}vw)`;
+      flipbook.style.transform = `translateX(-${currentIndex * 100}vw)`;
     }
 
     // Swipe controls
