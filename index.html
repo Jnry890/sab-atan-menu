@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sab-atan Menu</title>
+  <title>SAB-ATAN Menu</title>
   <style>
     body {
       margin: 0;
@@ -13,13 +13,17 @@
       width: 100vw;
     }
     .menu-container {
-      width: 100%;
-      height: 100%;
+      height: 100vh;
+      width: 100vw;
       position: relative;
     }
     .menu-container img {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      height: auto; /* ✅ keeps proportions */
+      height: 100vh;
+      object-fit: cover; /* fill screen, no gaps */
       display: none;
     }
     .menu-container img.active {
@@ -30,15 +34,16 @@
 <body>
   <div class="menu-container">
     <img src="sab-atan-front.png" alt="Menu Front" class="active">
-    <img src="sab-atan-2nd.png" alt="Menu 2nd">
-    <img src="sab-atan-3rd.png" alt="Menu 3rd">
-    <img src="sab-atan-4th.png" alt="Menu 4th">
+    <img src="sab-atan-2.png" alt="Menu Page 2">
+    <img src="sab-atan-3.png" alt="Menu Page 3">
+    <img src="sab-atan-4.png" alt="Menu Page 4">
+    <img src="sab-atan-5.png" alt="Menu Page 5">
     <img src="sab-atan-back.png" alt="Menu Back">
   </div>
 
   <script>
     const images = document.querySelectorAll('.menu-container img');
-    let currentIndex = 0;
+    let current = 0;
     let startX = 0;
     let endX = 0;
 
@@ -49,29 +54,41 @@
     }
 
     function nextImage() {
-      currentIndex = (currentIndex + 1) % images.length;
-      showImage(currentIndex);
+      current = (current + 1) % images.length;
+      showImage(current);
     }
 
     function prevImage() {
-      currentIndex = (currentIndex - 1 + images.length) % images.length;
-      showImage(currentIndex);
+      current = (current - 1 + images.length) % images.length;
+      showImage(current);
     }
 
-    // Swipe gestures
-    document.addEventListener("touchstart", (e) => startX = e.touches[0].clientX);
-    document.addEventListener("touchend", (e) => {
-      endX = e.changedTouches[0].clientX;
-      if (startX - endX > 50) nextImage();
-      else if (endX - startX > 50) prevImage();
+    // Swipe support
+    document.addEventListener('touchstart', e => {
+      startX = e.touches[0].clientX;
     });
 
-    // Mouse drag
-    document.addEventListener("mousedown", (e) => startX = e.clientX);
-    document.addEventListener("mouseup", (e) => {
+    document.addEventListener('touchend', e => {
+      endX = e.changedTouches[0].clientX;
+      if (endX < startX - 50) {
+        nextImage();
+      } else if (endX > startX + 50) {
+        prevImage();
+      }
+    });
+
+    // Mouse drag (desktop)
+    document.addEventListener('mousedown', e => {
+      startX = e.clientX;
+    });
+
+    document.addEventListener('mouseup', e => {
       endX = e.clientX;
-      if (startX - endX > 50) nextImage();
-      else if (endX - startX > 50) prevImage();
+      if (endX < startX - 50) {
+        nextImage();
+      } else if (endX > startX + 50) {
+        prevImage();
+      }
     });
   </script>
 </body>
