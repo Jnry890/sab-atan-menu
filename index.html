@@ -22,8 +22,9 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 100vh;
-      object-fit: cover; /* fill screen, no gaps */
+      height: 100%;
+      object-fit: contain; /* ✅ show full image, no cropping */
+      background: #000;    /* fill gaps with black */
       display: none;
     }
     .menu-container img.active {
@@ -63,7 +64,7 @@
       showImage(current);
     }
 
-    // Swipe support
+    // Swipe (mobile)
     document.addEventListener('touchstart', e => {
       startX = e.touches[0].clientX;
     });
