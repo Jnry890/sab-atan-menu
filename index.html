@@ -18,6 +18,7 @@
     #flipbook {
       width: 100vw;
       height: 100vh;
+      display: none; /* hide until images are loaded */
     }
 
     #flipbook div {
@@ -26,13 +27,13 @@
       align-items: center;
       width: 100%;
       height: 100%;
-      background: transparent; /* no black flash */
+      background: transparent;
     }
 
     #flipbook img {
       max-width: 100%;
       max-height: 100%;
-      object-fit: contain; /* always visible, black bars if needed */
+      object-fit: contain;
     }
 
     /* Swipe notification */
@@ -58,6 +59,34 @@
       90% { opacity: 1; }
       100% { opacity: 0; }
     }
+
+    /* Loading overlay */
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+    }
+
+    .spinner {
+      border: 6px solid #333;
+      border-top: 6px solid white;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 
   <!-- jQuery -->
@@ -66,47 +95,67 @@
   <script src="js/turn.min.js"></script>
 </head>
 <body>
+  <!-- Loader -->
+  <div id="loader"><div class="spinner"></div></div>
+
   <!-- Swipe Hint -->
   <div class="swipe-hint">📖 Swipe to flip pages</div>
 
+  <!-- Flipbook -->
   <div id="flipbook">
-    <div><img src="sab-atan-front.png?v=5" alt="Menu Front"></div>
-    <div><img src="sab-atan-2.png?v=5" alt="Menu Page 2"></div>
-    <div><img src="sab-atan-3.png?v=5" alt="Menu Page 3"></div>
-    <div><img src="sab-atan-4.png?v=5" alt="Menu Page 4"></div>
-    <div><img src="sab-atan-5.png?v=5" alt="Menu Page 5"></div>
-    <div><img src="sab-atan-back.png?v=5" alt="Menu Back"></div>
+    <div><img src="sab-atan-front.png?v=6" alt="Menu Front"></div>
+    <div><img src="sab-atan-2.png?v=6" alt="Menu Page 2"></div>
+    <div><img src="sab-atan-3.png?v=6" alt="Menu Page 3"></div>
+    <div><img src="sab-atan-4.png?v=6" alt="Menu Page 4"></div>
+    <div><img src="sab-atan-5.png?v=6" alt="Menu Page 5"></div>
+    <div><img src="sab-atan-back.png?v=6" alt="Menu Back"></div>
   </div>
 
   <script>
-    // Preload images to prevent black flash
     const images = [
-      "sab-atan-front.png?v=5",
-      "sab-atan-2.png?v=5",
-      "sab-atan-3.png?v=5",
-      "sab-atan-4.png?v=5",
-      "sab-atan-5.png?v=5",
-      "sab-atan-back.png?v=5"
+      "sab-atan-front.png?v=6",
+      "sab-atan-2.png?v=6",
+      "sab-atan-3.png?v=6",
+      "sab-atan-4.png?v=6",
+      "sab-atan-5.png?v=6",
+      "sab-atan-back.png?v=6"
     ];
+
+    let loaded = 0;
+
+    function allImagesLoaded() {
+      // Hide loader
+      document.getElementById("loader").style.display = "none";
+      // Show flipbook
+      document.getElementById("flipbook").style.display = "block";
+
+      // Initialize Turn.js
+      $("#flipbook").turn({
+        width: window.innerWidth * 0.9,
+        height: window.innerHeight * 0.9,
+        autoCenter: true,
+        display: "single",
+        elevation: 50,
+        gradients: true,
+        acceleration: true
+      });
+
+      // Resize when window changes
+      window.addEventListener("resize", () => {
+        $("#flipbook").turn("size", window.innerWidth * 0.9, window.innerHeight * 0.9);
+      });
+    }
+
+    // Preload images
     images.forEach(src => {
       const img = new Image();
       img.src = src;
-    });
-
-    // Initialize Turn.js
-    $("#flipbook").turn({
-      width: window.innerWidth * 0.9,
-      height: window.innerHeight * 0.9,
-      autoCenter: true,
-      display: "single",
-      elevation: 50,
-      gradients: true,
-      acceleration: true
-    });
-
-    // Resize when window changes
-    window.addEventListener("resize", () => {
-      $("#flipbook").turn("size", window.innerWidth * 0.9, window.innerHeight * 0.9);
+      img.onload = () => {
+        loaded++;
+        if (loaded === images.length) {
+          allImagesLoaded();
+        }
+      };
     });
 
     // Enable swipe on mobile
@@ -120,9 +169,9 @@
     document.getElementById("flipbook").addEventListener("touchend", (e) => {
       endX = e.changedTouches[0].screenX;
       if (startX - endX > 50) {
-        $("#flipbook").turn("next"); // swipe left → next page
+        $("#flipbook").turn("next");
       } else if (endX - startX > 50) {
-        $("#flipbook").turn("previous"); // swipe right → previous page
+        $("#flipbook").turn("previous");
       }
     });
   </script>
