@@ -52,45 +52,59 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/blasten/turn.js/turn.min.js"></script>
 
-   <script>
-    $(function() {
-      const flipbook = $("#flipbook");
-  
-      flipbook.turn({
-        width: window.innerWidth,
-        height: window.innerHeight,
-        autoCenter: true,
-        display: "single",
-        duration: 800,
-        acceleration: false
-      });
-  
-      // Resize handler
-      $(window).on("resize", function() {
-        flipbook.turn("size", window.innerWidth, window.innerHeight);
-      });
-  
-      // Enable swipe across the whole flipbook
-      let startX = 0;
-  
-      flipbook.on("touchstart", function(e) {
-        startX = e.originalEvent.touches[0].clientX;
-      });
-  
-      flipbook.on("touchend", function(e) {
-        const endX = e.originalEvent.changedTouches[0].clientX;
-        const diff = startX - endX;
-  
-        if (diff > 50) {
-          flipbook.turn("next"); // swipe left → next
-        } else if (diff < -50) {
-          flipbook.turn("previous"); // swipe right → previous
-        }
-      });
+  <script>
+  $(function() {
+    const flipbook = $("#flipbook");
+
+    flipbook.turn({
+      width: window.innerWidth,
+      height: window.innerHeight,
+      autoCenter: true,
+      display: "single",
+      duration: 800,
+      acceleration: false
     });
-  </script>
+
+    // Resize handler
+    $(window).on("resize", function() {
+      flipbook.turn("size", window.innerWidth, window.innerHeight);
+    });
+
+    // Variables to track pinch zoom
+    let pinchZoom = false;
+    let startX = 0;
+
+    flipbook.on("touchstart", function(e) {
+      if (e.originalEvent.touches.length > 1) {
+        // Pinch gesture
+        pinchZoom = true;
+        return;
+      }
+      pinchZoom = false;
+      startX = e.originalEvent.touches[0].clientX;
+    });
+
+    flipbook.on("touchend", function(e) {
+      if (pinchZoom) {
+        // User is zooming → don’t flip page
+        return;
+      }
+
+      const endX = e.originalEvent.changedTouches[0].clientX;
+      const diff = startX - endX;
+
+      if (diff > 50) {
+        flipbook.turn("next"); // swipe left → next
+      } else if (diff < -50) {
+        flipbook.turn("previous"); // swipe right → previous
+      }
+    });
+  });
+</script>
+
 
 </body>
 </html>
+
 
 
