@@ -26,14 +26,41 @@
     #flipbook img {
       width: 100%;
       height: 100%;
-      object-fit: contain; /* no crop, keep aspect ratio */
+      object-fit: contain; /* ✅ no crop, keep aspect ratio */
       display: block;
     }
 
-    /* Optional: smoother page shadow effect */
+    /* Page background */
     .turn-page {
-      background: green;
+      background: green !important; /* ✅ pages green */
       box-shadow: 0 0 8px rgba(0,0,0,0.5);
+    }
+
+    /* Swipe notification */
+    #swipeNotice {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 128, 0, 0.9); /* green background */
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-family: sans-serif;
+      z-index: 9999;
+      display: none; /* initially hidden */
+      animation: fadein 0.5s, fadeout 0.5s 4.5s;
+    }
+
+    @keyframes fadein {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeout {
+      from { opacity: 1; }
+      to { opacity: 0; }
     }
   </style>
 </head>
@@ -47,6 +74,9 @@
     <div><img src="sab-atan-5.png" alt="Page 5"></div>
     <div><img src="sab-atan-back.png" alt="Back"></div>
   </div>
+
+  <!-- Swipe notice -->
+  <div id="swipeNotice">👉 Swipe left or right to turn pages</div>
 
   <!-- jQuery & Turn.js -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -76,8 +106,7 @@
 
     flipbook.on("touchstart", function(e) {
       if (e.originalEvent.touches.length > 1) {
-        // Pinch gesture
-        pinchZoom = true;
+        pinchZoom = true; // 🚫 don't flip when zooming
         return;
       }
       pinchZoom = false;
@@ -85,10 +114,7 @@
     });
 
     flipbook.on("touchend", function(e) {
-      if (pinchZoom) {
-        // User is zooming → don’t flip page
-        return;
-      }
+      if (pinchZoom) return; // skip flipping on zoom
 
       const endX = e.originalEvent.changedTouches[0].clientX;
       const diff = startX - endX;
@@ -99,11 +125,20 @@
         flipbook.turn("previous"); // swipe right → previous
       }
     });
-  });
-</script>
 
+    // 🔔 Swipe notification logic
+    function showNotice() {
+      const notice = $("#swipeNotice");
+      notice.stop(true, true).fadeIn(500).delay(4000).fadeOut(500);
+    }
+
+    // Show first on load
+    showNotice();
+
+    // Repeat every 20 seconds
+    setInterval(showNotice, 20000);
+  });
+  </script>
 
 </body>
 </html>
-
-
